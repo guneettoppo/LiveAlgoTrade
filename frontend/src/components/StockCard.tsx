@@ -2,15 +2,15 @@
 
 interface StockCardProps {
     symbol: string;
-    price: number | null;  // <-- allow null safely
-    onPredict: (symbol: string) => void;
+    price: number | null;
+    onPredict: (symbol: string, price: number) => void;
     loading: boolean;
     prediction?: string;
 }
 
 export default function StockCard({ symbol, price, onPredict, loading, prediction }: StockCardProps) {
     return (
-        <div className="rounded-xl shadow-md p-6 bg-black w-full max-w-sm">
+        <div className="rounded-xl shadow-md p-6 bg-black text-white w-full max-w-sm">
             <div className="text-lg font-semibold">{symbol}</div>
 
             {price !== null ? (
@@ -20,15 +20,15 @@ export default function StockCard({ symbol, price, onPredict, loading, predictio
             )}
 
             <button
-                onClick={() => onPredict(symbol)}
+                onClick={() => onPredict(symbol, price!)}
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                disabled={loading || price === null} // disable button if price not loaded
+                disabled={loading || price === null}
             >
                 {loading ? 'Predicting...' : 'Predict'}
             </button>
 
             {prediction && (
-                <div className="mt-3 text-center font-medium text-green-700">
+                <div className="mt-3 text-center font-medium text-green-400">
                     {prediction}
                 </div>
             )}

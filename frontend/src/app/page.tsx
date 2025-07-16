@@ -9,12 +9,20 @@ export default function Home() {
     const [predictions, setPredictions] = useState<Record<string, string>>({});
     const [loadingSymbol, setLoadingSymbol] = useState<string | null>(null);
 
-    const handlePredict = async (symbol: string) => {
+    const handlePredict = async (symbol: string, price: number) => {
         setLoadingSymbol(symbol);
         try {
-            const res = await fetch(`http://localhost:8000/predict?symbol=${symbol}`);
+            const res = await fetch(`http://localhost:8000/predict`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ symbol, price }),
+            });
+
             const data = await res.json();
-            const arrow = data.direction === 'up' ? '🔼 Up' : '🔽 Down';
+
+            const arrow = data.direction === 'up' ? '↑ Up' : '↓ Down';
             setPredictions((prev) => ({
                 ...prev,
                 [symbol]: `${arrow} (${data.change}%)`,
@@ -22,7 +30,7 @@ export default function Home() {
         } catch (err) {
             setPredictions((prev) => ({
                 ...prev,
-                [symbol]: `❌ Error`,
+                [symbol]: `Error`,
             }));
         }
         setLoadingSymbol(null);
@@ -42,7 +50,7 @@ export default function Home() {
                         symbol={stock.symbol}
                         price={stock.price}
                         prediction={predictions[stock.symbol]}
-                        onPredict={handlePredict}
+                        onPredict={(symbol, price) => handlePredict(symbol, price)}
                         loading={loadingSymbol === stock.symbol}
                     />
                 ))}
